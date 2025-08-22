@@ -8,7 +8,7 @@ import "react-rater/lib/react-rater.css";
 import type { AppProps } from "next/app";
 import { Poppins } from "next/font/google";
 import Router from "next/router";
-import React, { Fragment } from "react";
+import React from "react";
 
 import { wrapper } from "../store";
 import * as gtag from "../utils/gtag";
@@ -20,7 +20,6 @@ const isProduction = process.env.NODE_ENV === "production";
 
 // only events on production
 if (isProduction) {
-  // Notice how we track pageview when route is changed
   Router.events.on("routeChangeComplete", (url: string) => gtag.pageview(url));
 }
 
@@ -30,21 +29,24 @@ const poppins = Poppins({
   variable: "--main-font",
 });
 
-const MyApp = ({ Component, pageProps }: AppProps) => (
-  <Fragment>
-    {/* global font variable */}
-    <style jsx global>{`
-      :root {
-        --main-font: ${poppins.style.fontFamily};
-      }
-    `}</style>
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <React.StrictMode>
+      {/* global font variable */}
+      <style jsx global>{`
+        :root {
+          --main-font: ${poppins.style.fontFamily};
+        }
+      `}</style>
 
-    {/* ✅ Traffic report script injected globally */}
-    <TrafficReport />
+      {/* ✅ Traffic report script injected globally */}
+      <TrafficReport />
 
-    {/* Render actual app page */}
-    <Component {...pageProps} />
-  </Fragment>
-);
+      {/* ✅ Render actual app page */}
+      <Component {...pageProps} />
+    </React.StrictMode>
+  );
+}
 
+// ✅ wrapper.withRedux still works
 export default wrapper.withRedux(MyApp);
